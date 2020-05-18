@@ -263,7 +263,7 @@ const changeLocation = async (tokenDev, tokenProd, limit = 5, page = 1) => {
     console.log({ imos });
   } catch (err) {
     console.log(err);
-    return 'Error';
+    return err;
   }
   do {
     try {
