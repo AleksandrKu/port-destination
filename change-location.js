@@ -22,84 +22,6 @@ const getVesselsFromDev = (limit = 5, page = 1, tokenDev) => {
     sort: { field: 'updateAt', value: -1 },
     channels: { mine: true, broker: true, market: true },
     allChannelFiltersApplied: true,
-    channelQuery: {
-      $or: [
-        {
-          $and: [
-            {
-              $or: [
-                {
-                  source: { $exists: false },
-                  endAt: { $gt: '2020-04-22T10:52:47.240Z' },
-                  clonedFromBroker: { $exists: false },
-                },
-                {
-                  'freightRequests.cargoSide.user': {
-                    $in: [
-                      '59b6b447f1640012e129b6eb',
-                      '5bebe91691b15a06b65b93b6',
-                      '5c9de08fdedf8a62dca89c5d',
-                      '5cd008c7bedb8806dc225d2b',
-                      '5cd00dc9bedb8806dc2263ea',
-                      '5d8399227502766109ae30f7',
-                      '5e73a2bf15ada53e5022917c',
-                    ],
-                  },
-                  clonedFromBroker: { $ne: '59b6b447f1640012e129b6ea' },
-                },
-                {
-                  'offersRequests.cargoSide.user': {
-                    $in: [
-                      '59b6b447f1640012e129b6eb',
-                      '5bebe91691b15a06b65b93b6',
-                      '5c9de08fdedf8a62dca89c5d',
-                      '5cd008c7bedb8806dc225d2b',
-                      '5cd00dc9bedb8806dc2263ea',
-                      '5d8399227502766109ae30f7',
-                      '5e73a2bf15ada53e5022917c',
-                    ],
-                  },
-                  clonedFromBroker: { $ne: '59b6b447f1640012e129b6ea' },
-                },
-              ],
-            },
-            {
-              addedBy: {
-                $nin: [
-                  '59b6b447f1640012e129b6eb',
-                  '5bebe91691b15a06b65b93b6',
-                  '5c9de08fdedf8a62dca89c5d',
-                  '5cd008c7bedb8806dc225d2b',
-                  '5cd00dc9bedb8806dc2263ea',
-                  '5d8399227502766109ae30f7',
-                  '5e73a2bf15ada53e5022917c',
-                ],
-              },
-            },
-            { source: { $ne: 'company:59b6b447f1640012e129b6ea' } },
-          ],
-        },
-        { $and: [{ source: 'company:59b6b447f1640012e129b6ea' }] },
-        {
-          $and: [
-            {
-              addedBy: {
-                $in: [
-                  '59b6b447f1640012e129b6eb',
-                  '5bebe91691b15a06b65b93b6',
-                  '5c9de08fdedf8a62dca89c5d',
-                  '5cd008c7bedb8806dc225d2b',
-                  '5cd00dc9bedb8806dc2263ea',
-                  '5d8399227502766109ae30f7',
-                  '5e73a2bf15ada53e5022917c',
-                ],
-              },
-            },
-            { source: { $exists: false } },
-          ],
-        },
-      ],
-    },
   });
   return new Promise((resolve, reject) => {
     const req = https.request(options, res => {
@@ -142,11 +64,11 @@ const getVesselLocation = (imoNumber, tokenProd) => {
         vesselLocation += chunk;
       });
       res.on('end', () => {
-        vesselLocation = JSON.parse(vesselLocation);
         try {
+          vesselLocation = JSON.parse(vesselLocation);
           resolve(vesselLocation);
         } catch (error) {
-          console.log('Bad vessel IMO. Will not compare!!!  No in shipnextDatabase: ', imoNumber);
+          console.log('Bad response ', imoNumber);
           reject(String(error));
         }
       });
@@ -181,7 +103,7 @@ const getVesselById = (id, tokenDev) => {
           const { name, imoNumber, blt, flag, type } = objectResponse.data;
           resolve({ name, imoNumber, blt, flag: flag._id, type, id });
         } catch (error) {
-          console.log('Bad vessel Id. Will not compare!!!  No in shipnextDev: ', error);
+          console.log(error);
           reject(String(error));
         }
       });
